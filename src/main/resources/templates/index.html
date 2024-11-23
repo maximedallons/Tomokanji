@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/fontawesome/all.min.css}">
+</head>
+<body>
+
+<div th:replace="~{/includes/navbar :: navbar}"> </div>
+
+<div class="content row scroll-y">
+    <div th:replace="~{/includes/container :: container}"> </div>
+</div>
+
+<div th:replace="~{/includes/loadingPopup :: loadingPopup}"> </div>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/fontawesome/all.min.js}"></script>
+<script th:src="@{/js/common.js}"></script>
+
+</body>
+</html>
+
+<script>
+    $(document).ready(function() {
+        $(".nav-search").show();
+
+        const debouncedSearch = common.debounce(function () {
+            const query = $('#searchQuery').val();
+            common.searchWords(query, 0, true, $('#results'));
+        }, 300);
+
+        $('#searchQuery').off('input').on('input', debouncedSearch);
+    })
+</script>

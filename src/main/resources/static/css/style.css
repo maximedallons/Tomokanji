@@ -1,0 +1,211 @@
+.input {
+    height: 32px;
+    width: 100%;
+    padding: 0 0.75rem 0 30px;
+    box-sizing: border-box;
+    outline: none;
+    border-radius: 5px;
+    font-size: 14px;
+    line-height: 20px;
+    border: 1px solid var(--input-border);
+    box-shadow: none;
+    background-color: #22272b;
+    color: #8c9bab;
+}
+
+.input:focus {
+    border-color: var(--input-border-focus);
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.card {
+    width: 18rem;
+    background: var(--button-color);
+    border: 1px solid var(--border-color);
+}
+
+.card-body {
+    flex: 1 1 auto;
+    padding: 1rem;
+    color: var(--text-color);
+    position: relative;
+}
+
+.card-body.hide-after::after{
+    display: none;
+}
+
+.card-body::after {
+    width: 50px;
+    height: 25px;
+    background: var(--button-color-hover);
+    color: var(--text-selected);
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-radius: 3px;
+    place-content: center;
+    text-align: center;
+    margin: 1rem;
+    content: attr(data-level);
+}
+
+.card-title {
+    margin-bottom: 0.5rem;
+    padding-right: 3rem;
+}
+
+.card-text{
+    padding-right: 3rem;
+}
+
+.card-text:last-child {
+    margin-bottom: 0;
+}
+
+.navbar {
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #a6c5e229;
+}
+
+.navbar .title {
+    color: var(--text-color);
+    font-size: 20px;
+    padding: 14px 20px;
+    text-wrap: nowrap;
+    text-decoration: none;
+    width: 125px;
+}
+
+.nav-items {
+    margin-right: auto;
+}
+
+.nav-items a {
+    color: var(--text-color);
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+}
+
+.nav-items a:hover {
+    color: var(--text-selected);
+}
+
+.nav-items a.active {
+    color: var(--text-selected);
+    border-bottom: 2px solid var(--text-selected);
+}
+
+.nav-search {
+    width: 300px;
+    padding: 6px 1rem;
+    margin: 0 1rem;
+    border-radius: 4px;
+}
+
+.loading-dots {
+    display: inline-block;
+    text-align: center;
+    height: 1em;
+    width: 3em;
+    position: fixed; /* Make it fixed to stay at the center of the screen */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 1000; /* Ensure it is above other elements */
+}
+
+.loading-dots span {
+    display: inline-block;
+    width: .5em;
+    height: .5em;
+    background: white; /* Change color to white */
+    border-radius: 50%;
+    position: absolute;
+    bottom: 0;
+    animation: bounce 1.2s infinite;
+}
+
+.loading-dots span:nth-child(1) {
+    left: 0;
+    animation-delay: 0s;
+}
+
+.loading-dots span:nth-child(2) {
+    left: 1em;
+    animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+    left: 2em;
+    animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+    0%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-0.5em); /* Reduce the jump height */
+    }
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+}
+
+.input-container input {
+    flex: 1;
+    padding-left: 2rem; /* Provide space for the icon inside the input */
+}
+
+.input-container:has(.input:focus) .fa-magnifying-glass {
+    opacity: 1;
+    color: var(--input-border-focus);
+}
+
+.input-container .fa-magnifying-glass {
+    position: absolute;
+    margin-left: 1.5rem;
+    opacity: 0.5;
+}
+
+.btn-list {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 1rem;
+}
+
+.btn {
+    width: 100px;
+    height: 35px;
+    font-size: 14px;
+    color: var(--text-color);
+    background: var(--button-color);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: var(--button-color-hover);
+}
+
+.btn.active {
+    border-color: var(--text-selected);
+    color: var(--text-selected);
+}

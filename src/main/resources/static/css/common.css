@@ -1,0 +1,157 @@
+:root {
+    --background-color : #1d2125;
+    --text-color : #b6c2cf;
+    --button-color: #a1bdd914;
+    --border-color: #27282b;
+    --button-color-hover: #a6c5e229;
+    --text-selected: #579dff;
+    --text-selected-hover: #4f8be1;
+    --input-bg: #22272b;
+    --input-text: #8c9bab;
+    --input-border: #738496;
+    --input-border-focus: #85b8ff;
+
+    --bs-font-sans-serif:system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    "Noto Sans",
+    "Liberation Sans",
+    Arial,
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji";
+
+    --bs-body-font-family:var(--bs-font-sans-serif);
+    --bs-body-font-size:1rem;
+    --bs-body-font-weight:400;
+    --bs-body-line-height:1.5;
+}
+
+@media (prefers-reduced-motion:no-preference) {
+    :root {
+        scroll-behavior:smooth
+    }
+}
+
+*, ::after, ::before {
+    box-sizing: border-box;
+}
+
+@media screen {
+
+    /* start of screen rules. */
+
+    /* Generic pane rules */
+    body { margin: 0 }
+    .row, .col { overflow: hidden; position: absolute; }
+    .row { left: 0; right: 0; }
+    .col { top: 0; bottom: 0; }
+    .scroll-x { overflow-x: auto; }
+    .scroll-y { overflow-y: auto; }
+
+    .header.row { height: 60px; top: 0; }
+    .content.row { top: 60px; bottom: 50px; }
+    .footer.row { height: 50px; bottom: 0; }
+
+    /* end of screen rules. */
+}
+
+body {
+    font-family: var(--bs-body-font-family), serif;
+    font-size:var(--bs-body-font-size);
+    font-weight:var(--bs-body-font-weight);
+    line-height:var(--bs-body-line-height);
+    color:var(--text-color);
+    text-align: left;
+    background-color:var(--background-color);
+    -webkit-text-size-adjust:100%;
+    -webkit-tap-highlight-color:transparent;
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6,
+h1, h2, h3, h4, h5, h6 {
+    margin-top:0;
+    margin-bottom:.5rem;
+    font-weight:500;
+    line-height:1.2;
+    color:var(--bs-heading-color)
+}
+.h1, h1 {
+    font-size:calc(1.375rem + 1.5vw)
+}
+@media (min-width:1200px) {
+    .h1, h1 {
+        font-size:2.5rem
+    }
+}
+.h2, h2 {
+    font-size:calc(1.325rem + .9vw)
+}
+@media (min-width:1200px) {
+    .h2, h2 {
+        font-size:2rem
+    }
+}
+.h3, h3 {
+    font-size:calc(1.3rem + .6vw)
+}
+@media (min-width:1200px) {
+    .h3, h3 {
+        font-size:1.75rem
+    }
+}
+.h4, h4 {
+    font-size:calc(1.275rem + .3vw)
+}
+@media (min-width:1200px) {
+    .h4, h4 {
+        font-size:1.5rem
+    }
+}
+.h5, h5 {
+    font-size:1.25rem
+}
+
+p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.container {
+    --bs-gutter-x:1.5rem;
+    --bs-gutter-y:0;
+    width:100%;
+    padding-right:calc(1.5rem * .5);
+    padding-left:calc(1.5rem * .5);
+    margin-right:auto;
+    margin-left:auto
+}
+@media (min-width:576px) {
+    .container {
+        max-width:540px
+    }
+}
+@media (min-width:768px) {
+    .container {
+        max-width:720px
+    }
+}
+@media (min-width:992px) {
+    .container {
+        max-width:960px
+    }
+}
+@media (min-width:1200px) {
+    .container {
+        max-width:1140px
+    }
+}
+@media (min-width:1400px) {
+    .container {
+        max-width:1320px
+    }
+}
