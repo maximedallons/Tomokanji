@@ -25,9 +25,9 @@ var common = {
     },
 
     searchWords: function (query, level, isCommon, $result) {
+        $result.empty();
 
         if(query === "") {
-            $result.empty();
             return;
         }
 
@@ -53,13 +53,12 @@ var common = {
         });
 
         function makeCards(data, $result) {
-            $result.empty();
             data.forEach(function (word) {
                 const level = word.level ? `N${word.level}` : "";
                 const hasLevelClass = level ? "" : "hide-after";
-                const kanjiText = word.kanji.map(k => k.text).join(", ");
-                const kanaText = word.kana.map(k => k.text).join(", ");
-                const meaningText = word.sense[0].gloss.map(g => g.text).join(", ");
+                const kanjiText = word.kanjis.map(kanji => kanji.text).join(", ");
+                const kanaText = word.kanas.map(kana => kana.text).join(", ");
+                const meaningText = word.translations.join(", ");
                 const $card = `
                     <div class="card">
                       <div class="card-body ${hasLevelClass}" data-level="${level}">

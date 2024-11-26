@@ -1,13 +1,17 @@
 package com.tomokanji.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tomokanji.model.Entry;
+import com.tomokanji.model.KanaInfo;
 import com.tomokanji.model.KanjiInfo;
-import com.tomokanji.model.Word;
-import com.tomokanji.model.WordListWrapper;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +21,7 @@ import java.util.stream.Stream;
 
 @Service
 public class WordService {
-    private List<Word> words;
+    private List<Entry> entries;
 
     public WordService() {
         loadWords();
@@ -26,21 +30,65 @@ public class WordService {
     private void loadWords() {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            WordListWrapper wrapper = objectMapper.readValue(
-                    new ClassPathResource("static/dictionaries/jmdict.json").getFile(),
-                    WordListWrapper.class
+            JsonNode rootNode = objectMapper.readTree(
+                    new ClassPathResource("static/dictionaries/jmdict.json").getFile()
             );
-            Map<String, Integer> levelMap = loadLevels(); // Load levels
-            words = wrapper.getWords();
-            // Assign levels to each word
-            for (Word word : words) {
-                Integer level = levelMap.get(word.getId());
-                if (level != null) {
-                    word.setLevel(level);
+            JsonNode wordsNode = rootNode.get("words");
+
+            if (wordsNode != null) {
+                entries = new ArrayList<>();
+                for (JsonNode wordNode : wordsNode) {
+                    Entry entry = new Entry();
+                    entry.setId(wordNode.get("id").asText());
+
+                    List<KanjiInfo> kanjis = new ArrayList<>();
+                    for (JsonNode kanjiNode : wordNode.get("kanji")) {
+                        kanjis.add(new KanjiInfo(kanjiNode.get("text").asText(), kanjiNode.get("common").asBoolean()));
+                    }
+
+                    List<KanaInfo> kanas = new ArrayList<>();
+                    for (JsonNode kanaNode : wordNode.get("kana")) {
+                        kanas.add(new KanaInfo(kanaNode.get("text").asText(), kanaNode.get("common").asBoolean()));
+                    }
+
+                    List<String> translations = new ArrayList<>();
+                    // Check if wordNode has the "sense" field and it is not empty
+                    if (wordNode.has("sense") && wordNode.get("sense").size() > 0) {
+                        // Get the first sense object
+                        JsonNode firstSenseNode = wordNode.get("sense").get(0);
+
+                        // Check if the first sense node has the "gloss" field
+                        if (firstSenseNode.has("gloss")) {
+                            // Loop through each gloss entry in the first sense object
+                            for (JsonNode glossNode : firstSenseNode.get("gloss")) {
+                                // Add the text of the gloss to the translations list
+                                translations.add(glossNode.get("text").asText());
+                            }
+                        }
+                    }
+
+                    entry.setKanjis(kanjis);
+                    entry.setKanas(kanas);
+                    entry.setTranslations(translations);
+
+                    // Add examples handling if needed
+                    entry.setExamples(new ArrayList<>()); // Initialize examples if you need to
+
+                    entries.add(entry);
                 }
+
+                Map<String, Integer> levelMap = loadLevels(); // Load levels
+                for (Entry entry : entries) {
+                    Integer level = levelMap.get(entry.getId());
+                    if (level != null) {
+                        entry.setLevel(level);
+                    }
+                }
+            } else {
+                entries = new ArrayList<>();
             }
         } catch (IOException ignored) {
-            words = new ArrayList<>();
+            entries = new ArrayList<>();
         }
     }
 
@@ -62,7 +110,7 @@ public class WordService {
         return levelMap;
     }
 
-    public List<Word> searchWords(String query, int level, boolean isCommon) {
+    public List<Entry> searchWords(String query, int level, boolean isCommon) {
 
         if((query == null || query.isEmpty()) && level == 0) {
             return new ArrayList<>();
@@ -75,13 +123,17 @@ public class WordService {
             formattedQuery = query;
         }
 
-        List<Word> wordsToFilter = words.stream().toList();
+        List<Entry> wordsToFilter = new ArrayList<>(entries);
 
         if(isCommon) {
-            System.out.println("Filtering common words");
-            wordsToFilter = words.stream()
-                    .filter(word -> word.getKanji().stream().anyMatch(KanjiInfo::isCommon))
-                    .collect(Collectors.toList());
+            List<Entry> commonEntries = new ArrayList<>();
+            for(Entry entry : wordsToFilter) {
+                if(!entry.hasOnlyUncommons()) {
+                    entry.removeUncommons();
+                    commonEntries.add(entry);
+                }
+            }
+            wordsToFilter = commonEntries;
         }
 
         if(level > 0) {
@@ -92,49 +144,47 @@ public class WordService {
             return wordsToFilter;
         }
 
-        List<Word> exactMatches = wordsToFilter.stream()
-                .filter(word -> containsExactMatch(word, formattedQuery))
-                .collect(Collectors.toList());
+        List<Entry> exactMatches = wordsToFilter.stream()
+                .filter(entry -> containsExactMatch(entry, formattedQuery))
+                .toList();
 
-        List<Word> partialMatches = wordsToFilter.stream()
-                .filter(word -> containsPartialMatch(word, formattedQuery))
-                .collect(Collectors.toList());
+        List<Entry> partialMatches = wordsToFilter.stream()
+                .filter(entry -> containsPartialMatch(entry, formattedQuery))
+                .toList();
 
-        List<Word> filteredWords = Stream.concat(exactMatches.stream(), partialMatches.stream())
+        List<Entry> filteredWords = Stream.concat(exactMatches.stream(), partialMatches.stream())
                 .distinct() // remove duplicates
-                .collect(Collectors.toList());
+                .toList();
 
-        List<Word> wordsWithLevel = filteredWords.stream()
-                .filter(word -> word.getLevel() != null)
-                .sorted((word1, word2) -> Integer.compare(word2.getLevel(), word1.getLevel())) // Sort in descending order
-                .collect(Collectors.toList());
-        List<Word> wordsWithoutLevel = filteredWords.stream()
-                .filter(word -> word.getLevel() == null)
-                .collect(Collectors.toList());
+        List<Entry> wordsWithLevel = filteredWords.stream()
+                .filter(entry -> entry.getLevel() != null)
+                .sorted((entry1, entry2) -> Integer.compare(entry2.getLevel(), entry1.getLevel())) // Sort in descending order
+                .toList();
+        List<Entry> wordsWithoutLevel = filteredWords.stream()
+                .filter(entry -> entry.getLevel() == null)
+                .toList();
 
         return Stream.concat(wordsWithLevel.stream(), wordsWithoutLevel.stream())
                 .collect(Collectors.toList());
     }
 
-    private boolean containsExactMatch(Word word, String query) {
-        return word.getKana().stream().anyMatch(kana -> kana.getText().equals(query)) ||
-                word.getKanji().stream().anyMatch(kanji -> kanji.getText().equals(query) && kanji.isCommon()) ||
-                (word.getSense() != null && !word.getSense().isEmpty() &&
-                        word.getSense().get(0).getGloss().get(0).getText().equals(query)) ||
-                word.getId().equals(query);
+    private boolean containsExactMatch(Entry entry, String query) {
+        return entry.getKanas().stream().anyMatch(kana -> kana.getText().equals(query)) ||
+                entry.getKanjis().stream().anyMatch(kanji -> kanji.getText().equals(query)) ||
+                entry.getTranslations().stream().anyMatch(translation -> translation.equals(query)) ||
+                entry.getId().equals(query);
     }
 
-    private boolean containsPartialMatch(Word word, String query) {
-        return word.getKana().stream().anyMatch(kana -> kana.getText().contains(query)) ||
-                word.getKanji().stream().anyMatch(kanji -> kanji.getText().contains(query) && kanji.isCommon()) ||
-                (word.getSense() != null && !word.getSense().isEmpty() &&
-                        word.getSense().get(0).getGloss().get(0).getText().contains(query)) ||
-                word.getId().contains(query);
+    private boolean containsPartialMatch(Entry entry, String query) {
+        return entry.getKanas().stream().anyMatch(kana -> kana.getText().contains(query)) ||
+                entry.getKanjis().stream().anyMatch(kanji -> kanji.getText().contains(query)) ||
+                entry.getTranslations().stream().anyMatch(translation -> translation.contains(query)) ||
+                entry.getId().contains(query);
     }
 
-    public List<Word> searchWordsByLevel(List<Word> wordsToFilter, int level) {
+    public List<Entry> searchWordsByLevel(List<Entry> wordsToFilter, int level) {
         return wordsToFilter.stream()
-                .filter(word -> word.getLevel() != null && word.getLevel() == level)
+                .filter(entry -> entry.getLevel() != null && entry.getLevel() == level)
                 .collect(Collectors.toList());
     }
 }

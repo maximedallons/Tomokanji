@@ -4,6 +4,7 @@
 
 <script>
     $(document).ready(function() {
+        $(".nav-search").val("");
         $(".nav-search").show();
 
         const debouncedSearch = common.debounce(function () {
