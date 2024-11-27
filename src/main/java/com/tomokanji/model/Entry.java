@@ -16,6 +16,7 @@ public class Entry {
     private List<String> translations;
     private List<String> examples;
     private Integer level;
+    private boolean mastered;
 
     public void removeUncommons() {
         kanjis.removeIf(kanji -> !kanji.isCommon());

@@ -22,4 +22,9 @@ public class ViewController {
     public String jlpt(Model model) {
         return "/includes/jlpt";
     }
+
+    @GetMapping("/cards")
+    public String cards(Model model) {
+        return "/includes/cards";
+    }
 }

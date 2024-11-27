@@ -187,4 +187,26 @@ public class WordService {
                 .filter(entry -> entry.getLevel() != null && entry.getLevel() == level)
                 .collect(Collectors.toList());
     }
+
+    public List<Entry> getFlashcardsByLevel(int level) {
+        List<Entry> wordsToFilter = new ArrayList<>(entries);
+        List<Entry> commonEntries = new ArrayList<>();
+        for(Entry entry : wordsToFilter) {
+            if(!entry.hasOnlyUncommons()) {
+                entry.removeUncommons();
+                commonEntries.add(entry);
+            }
+        }
+        wordsToFilter = commonEntries;
+        return wordsToFilter.stream()
+                .filter(entry -> entry.getLevel() != null && entry.getLevel() == level && !entry.isMastered())
+                .collect(Collectors.toList());
+    }
+
+    public void markAsMastered(String entryId) {
+        entries.stream()
+                .filter(entry -> entry.getId().equals(entryId))
+                .findFirst()
+                .ifPresent(entry -> entry.setMastered(true));
+    }
 }

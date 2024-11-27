@@ -190,8 +190,16 @@
     margin-top: 1rem;
 }
 
-.btn {
+.navbar .btn,
+.btn-list .btn{
     width: 100px;
+}
+
+.flashcard-container .btn {
+    width: 100%;
+}
+
+.btn {
     height: 35px;
     font-size: 14px;
     color: var(--text-color);
