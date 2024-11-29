@@ -16,17 +16,17 @@ public class WordController {
         this.wordRepository = wordRepository;
     }
 
-    @GetMapping("/words")
+    @GetMapping("/")
     public List<Word> getWords() {
         return wordRepository.getWords();
     }
 
-    @GetMapping("/words/level/{level}")
+    @GetMapping("/level/{level}")
     public List<Word> getWordsByLevel(@PathVariable("level") int level) {
         return wordRepository.getWordsByLevel(level);
     }
 
-    @GetMapping("/words/search")
+    @GetMapping("/search")
     public List<Word> getWordsByQuery(@RequestParam("query") String query) {
         return wordRepository.getWordsByQuery(query);
     }

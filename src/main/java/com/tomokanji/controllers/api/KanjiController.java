@@ -16,17 +16,17 @@ public class KanjiController {
         this.kanjiRepository = kanjiRepository;
     }
 
-    @GetMapping("/kanjis")
+    @GetMapping("/")
     public List<Kanji> getKanjis() {
         return kanjiRepository.getKanjis();
     }
 
-    @GetMapping("/kanjis/level/{level}")
+    @GetMapping("/level/{level}")
     public List<Kanji> getKanjisByLevel(@PathVariable("level") int level) {
         return kanjiRepository.getKanjisByLevel(level);
     }
 
-    @GetMapping("/kanjis/search")
+    @GetMapping("/search")
     public List<Kanji> getKanjisByQuery(@RequestParam("query") String query) {
         return kanjiRepository.getKanjisByQuery(query);
     }
