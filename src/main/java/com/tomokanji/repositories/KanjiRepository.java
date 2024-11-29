@@ -10,4 +10,6 @@ public interface KanjiRepository {
     List<Kanji> getKanjisByLevel(int level);
 
     List<Kanji> getKanjisByQuery(String query);
+
+    List<Kanji> findKanjisByIds(List<Integer> kanjiIds);
 }

@@ -50,6 +50,13 @@ public class KanjiRepositoryImpl implements KanjiRepository{
         return filteredKanjis;
     }
 
+    @Override
+    public List<Kanji> findKanjisByIds(List<Integer> kanjiIds) {
+        List<Kanji> filteredKanjis = kanjis.stream().filter(kanji -> kanjiIds.contains(kanji.getId()))
+                .collect(Collectors.toList());
+        return filteredKanjis;
+    }
+
     private void loadKanjis() {
         System.out.println("Loading kanjis...");
         List<Kanji> kanjis = new ArrayList<>();

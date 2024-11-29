@@ -1,21 +1,71 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-  <title>Home</title>
-  <link rel="stylesheet" th:href="@{/css/common.css}">
-  <link rel="stylesheet" th:href="@{/css/style.css}">
-  <link rel="stylesheet" th:href="@{/css/fontawesome/all.min.css}">
+    <title>Home</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/fontawesome/all.min.css}">
 </head>
 <body>
 
 <div class="container">
-  <h1>Home</h1>
-  <p>Welcome to the home page!</p>
+    <h1>Home</h1>
+    <p>Welcome to the home page!</p>
+
+    <h2>Login</h2>
+    <form id="login-form">
+        <label>
+            <input type="text" name="username" placeholder="Username" maxlength="32" required>
+        </label>
+        <label>
+            <input type="password" name="password" placeholder="Password" maxlength="32" required>
+        </label>
+        <a onclick="login()">Login</a>
+    </form>
+
+    <h2>Register</h2>
+    <form id="register-form">
+        <label>
+            <input type="text" name="username" placeholder="Username" maxlength="32" required>
+        </label>
+        <label>
+            <input type="password" name="password" placeholder="Password" maxlength="32" required>
+        </label>
+        <a onclick="register()">Register</a>
+    </form>
 </div>
 
 <script th:src="@{/js/jquery.min.js}"></script>
 <script th:src="@{/js/fontawesome/all.min.js}"></script>
 <script th:src="@{/js/common.js}"></script>
+
+<script>
+    function login() {
+        let $form = $("#login-form");
+        let username = $form.find("input[name='username']").val();
+        let password = $form.find("input[name='password']").val();
+        $.get(`api/users/${username}/${password}`, function (data) {
+            if (data === true) {
+                alert('Login successful');
+            } else {
+                alert('Login failed');
+            }
+        });
+    }
+
+    function register() {
+        let $form = $("#register-form");
+        let username = $form.find("input[name='username']").val();
+        let password = $form.find("input[name='password']").val();
+        $.post(`api/users/${username}/${password}`, function (data) {
+            if (data === true) {
+                alert('Register successful');
+            } else {
+                alert('Register failed');
+            }
+        });
+    }
+</script>
 
 </body>
 </html>

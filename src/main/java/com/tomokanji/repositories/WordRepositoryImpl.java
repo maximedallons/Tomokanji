@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tomokanji.model.KanaInfo;
 import com.tomokanji.model.KanjiInfo;
 import com.tomokanji.model.Word;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
@@ -49,7 +47,6 @@ public class WordRepositoryImpl implements WordRepository {
 
     @Override
     public List<Word> getWordsByQuery(String query) {
-        // Minimum query length is 4 characters
         if(query.length() <= 3)
             return null;
 
@@ -59,6 +56,11 @@ public class WordRepositoryImpl implements WordRepository {
                         word.getTranslations().stream().anyMatch(translation -> translation.contains(query))
         ).collect(Collectors.toList());
         return filteredWords;
+    }
+
+    @Override
+    public List<Word> findWordsByIds(List<Integer> wordIds) {
+        return words.stream().filter(word -> wordIds.contains(word.getId())).collect(Collectors.toList());
     }
 
     private void loadWords() {

@@ -10,4 +10,6 @@ public interface WordRepository {
     List<Word> getWordsByLevel(int level);
 
     List<Word> getWordsByQuery(String query);
+
+    List<Word> findWordsByIds(List<Integer> wordIds);
 }
