@@ -12,19 +12,4 @@ public class ViewController {
         model.addAttribute("applicationTitle", "TomoKanji");
         return "index";
     }
-
-    @GetMapping("/container")
-    public String container(Model model) {
-        return "/includes/container";
-    }
-
-    @GetMapping("/jlpt")
-    public String jlpt(Model model) {
-        return "/includes/jlpt";
-    }
-
-    @GetMapping("/cards")
-    public String cards(Model model) {
-        return "/includes/cards";
-    }
 }
