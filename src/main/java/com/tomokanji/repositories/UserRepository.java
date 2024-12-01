@@ -1,14 +1,15 @@
 package com.tomokanji.repositories;
 
 import com.tomokanji.model.Kanji;
+import com.tomokanji.model.User;
 import com.tomokanji.model.Word;
 
 import java.util.List;
 
 public interface UserRepository {
-    boolean isUserExist(String username, String password);
+    User isUserExist(String username, String password);
 
-    boolean registerUser(String username, String password);
+    User registerUser(String username, String password);
 
     boolean isUserPremium(int userId);
 

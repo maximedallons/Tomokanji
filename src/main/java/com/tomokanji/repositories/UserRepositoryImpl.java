@@ -1,6 +1,7 @@
 package com.tomokanji.repositories;
 
 import com.tomokanji.model.Kanji;
+import com.tomokanji.model.User;
 import com.tomokanji.model.Word;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,28 +26,39 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean isUserExist(String username, String password) {
-        String sql = "SELECT COUNT(*) FROM users WHERE username = ? AND password = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, username, password);
-        return count != null && count > 0;
+    public User isUserExist(String login, String password) {
+        String sql = "SELECT COUNT(*) FROM users WHERE login = ? AND password = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, login, password);
+        if(count != null && count > 0) {
+            return findUserByLogin(login);
+        }
+        return null;
     }
 
     @Override
-    public boolean registerUser(String username, String password) {
-        String sql = "INSERT INTO users (username, password, premium, session_cookie) VALUES (?, ?, 0, NULL)";
-        return jdbcTemplate.update(sql, username, password) == 1;
+    public User registerUser(String login, String password) {
+        String sql = "INSERT INTO users (login, password, premium, cookie) VALUES (?, ?, 0, NULL)";
+        if(jdbcTemplate.update(sql, login, password) == 1) {
+            return findUserByLogin(login);
+        }
+        return null;
+    }
+
+    private User findUserByLogin(String login) {
+        String sql = "SELECT * FROM users WHERE username = ?";
+        return jdbcTemplate.queryForObject(sql, User.class, login);
     }
 
     @Override
     public boolean isUserPremium(int userId) {
-        String sql = "SELECT COUNT(*) FROM users WHERE id = ? AND premium = 1";
+        String sql = "SELECT COUNT(*) FROM users WHERE user_id = ? AND premium = 1";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, userId);
         return count != null && count > 0;
     }
 
     @Override
     public List<Integer> findMasteredWordIdsByUserId(int userId) {
-        String sql = "SELECT word_id FROM user_mastered_words WHERE user_id = ?";
+        String sql = "SELECT word_id FROM user_word_mastered WHERE user_id = ?";
         return jdbcTemplate.queryForList(sql, Integer.class, userId);
     }
 
@@ -58,7 +70,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<Integer> findMasteredKanjiIdsByUserId(int userId) {
-        String sql = "SELECT kanji_id FROM user_mastered_kanji WHERE user_id = ?";
+        String sql = "SELECT kanji_id FROM user_kanji_mastered WHERE user_id = ?";
         return jdbcTemplate.queryForList(sql, Integer.class, userId);
     }
 
@@ -71,25 +83,25 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean masterWord(int userId, int wordId) {
-        String sql = "INSERT INTO user_mastered_words (user_id, word_id) VALUES (?, ?)";
+        String sql = "INSERT INTO user_word_mastered (user_id, word_id) VALUES (?, ?)";
+        return jdbcTemplate.update(sql, userId, wordId) == 1;
+    }
+
+    @Override
+    public boolean unmasterWord(int userId, int wordId) {
+        String sql = "DELETE FROM user_word_mastered WHERE user_id = ? AND word_id = ?";
         return jdbcTemplate.update(sql, userId, wordId) == 1;
     }
 
     @Override
     public boolean masterKanji(int userId, int kanjiId) {
-        String sql = "INSERT INTO user_mastered_kanji (user_id, kanji_id) VALUES (?, ?)";
+        String sql = "INSERT INTO user_kanji_mastered (user_id, kanji_id) VALUES (?, ?)";
         return jdbcTemplate.update(sql, userId, kanjiId) == 1;
     }
 
     @Override
-    public boolean unmasterWord(int userId, int wordId) {
-        String sql = "DELETE FROM user_mastered_words WHERE user_id = ? AND word_id = ?";
-        return jdbcTemplate.update(sql, userId, wordId) == 1;
-    }
-
-    @Override
     public boolean unmasterKanji(int userId, int kanjiId) {
-        String sql = "DELETE FROM user_mastered_kanji WHERE user_id = ? AND kanji_id = ?";
+        String sql = "DELETE FROM user_kanji_mastered WHERE user_id = ? AND kanji_id = ?";
         return jdbcTemplate.update(sql, userId, kanjiId) == 1;
     }
 }
