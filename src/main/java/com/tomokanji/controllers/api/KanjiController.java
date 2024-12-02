@@ -5,7 +5,6 @@ import com.tomokanji.repositories.KanjiRepository;
 import com.tomokanji.repositories.LogRepository;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Time;
 import java.util.List;
 
 @RestController

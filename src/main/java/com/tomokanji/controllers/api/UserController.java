@@ -38,9 +38,9 @@ public class UserController {
     }
 
     @GetMapping("/{user_id}/words")
-    public List<Word> getMasteredWords(@PathVariable("user_id") int user_id) {
+    public List<Integer> getMasteredWords(@PathVariable("user_id") int user_id) {
         LogRepository.addLog("[GET] /api/users/"+user_id+"/words");
-        return userRepository.findMasteredWordsByUserId(user_id);
+        return userRepository.findMasteredWordIdsByUserId(user_id);
     }
 
     @PostMapping("/{user_id}/words/{word_id}")
@@ -56,9 +56,9 @@ public class UserController {
     }
 
     @GetMapping("/{user_id}/kanjis")
-    public List<Kanji> getMasteredKanjis(@PathVariable("user_id") int user_id) {
+    public List<Integer> getMasteredKanjiIds(@PathVariable("user_id") int user_id) {
         LogRepository.addLog("[GET] /api/users/"+user_id+"/kanjis");
-        return userRepository.findMasteredKanjisByUserId(user_id);
+        return userRepository.findMasteredKanjiIdsByUserId(user_id);
     }
 
     @PostMapping("/{user_id}/kanjis/{kanji_id}")

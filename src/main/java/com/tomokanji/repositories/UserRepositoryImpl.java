@@ -63,22 +63,9 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<Word> findMasteredWordsByUserId(int userId) {
-        List<Integer> wordIds = findMasteredWordIdsByUserId(userId);
-        return wordRepository.findWordsByIds(wordIds);
-    }
-
-    @Override
     public List<Integer> findMasteredKanjiIdsByUserId(int userId) {
         String sql = "SELECT kanji_id FROM user_kanji_mastered WHERE user_id = ?";
         return jdbcTemplate.queryForList(sql, Integer.class, userId);
-    }
-
-    @Override
-    public List<Kanji> findMasteredKanjisByUserId(int userId) {
-        List<Integer> kanjiIds = findMasteredKanjiIdsByUserId(userId);
-        System.out.println("kanjiIds: " + kanjiIds);
-        return kanjiRepository.findKanjisByIds(kanjiIds);
     }
 
     @Override

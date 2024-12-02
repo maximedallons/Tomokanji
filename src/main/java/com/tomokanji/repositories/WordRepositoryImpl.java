@@ -116,7 +116,7 @@ public class WordRepositoryImpl implements WordRepository {
                         word.setLevel(level);
                     }
 
-                    if(!word.hasOnlyUncommons())
+                    if(!word.hasOnlyUncommons() && word.getLevel() != null)
                         words.add(word);
                 }
                 System.out.println("Words loaded: " + words.size());

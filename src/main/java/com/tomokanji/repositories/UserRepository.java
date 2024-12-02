@@ -15,11 +15,7 @@ public interface UserRepository {
 
     List<Integer> findMasteredWordIdsByUserId(int userId);
 
-    List<Word> findMasteredWordsByUserId(int userId);
-
     List<Integer> findMasteredKanjiIdsByUserId(int userId);
-
-    List<Kanji> findMasteredKanjisByUserId(int userId);
 
     boolean masterWord(int userId, int wordId);
 
