@@ -1,5 +1,6 @@
 package com.tomokanji.repositories;
 
+import com.tomokanji.UserRowMapper;
 import com.tomokanji.model.Kanji;
 import com.tomokanji.model.User;
 import com.tomokanji.model.Word;
@@ -14,15 +15,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final WordRepository wordRepository;
-
-    private final KanjiRepository kanjiRepository;
-
     @Autowired
-    public UserRepositoryImpl(JdbcTemplate jdbcTemplate, WordRepository wordRepository, KanjiRepository kanjiRepository) {
+    public UserRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.wordRepository = wordRepository;
-        this.kanjiRepository = kanjiRepository;
     }
 
     @Override
@@ -45,8 +40,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     private User findUserByLogin(String login) {
-        String sql = "SELECT * FROM users WHERE username = ?";
-        return jdbcTemplate.queryForObject(sql, User.class, login);
+        String sql = "SELECT * FROM users WHERE login = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{login}, new UserRowMapper());
     }
 
     @Override

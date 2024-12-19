@@ -2,9 +2,7 @@ package com.tomokanji.repositories;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tomokanji.model.KanaInfo;
-import com.tomokanji.model.KanjiInfo;
-import com.tomokanji.model.Word;
+import com.tomokanji.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -75,17 +73,32 @@ public class WordRepositoryImpl implements WordRepository {
 
             if (wordsNode != null) {
                 for (JsonNode wordNode : wordsNode) {
+                    boolean skipThisWord = false;
                     Word word = new Word();
                     word.setId(wordNode.get("id").asInt());
 
                     List<KanjiInfo> kanjis = new ArrayList<>();
                     for (JsonNode kanjiNode : wordNode.get("kanji")) {
-                        kanjis.add(new KanjiInfo(kanjiNode.get("text").asText(), kanjiNode.get("common").asBoolean()));
+                        if (kanjiNode.get("text").asText().length() == 1)
+                            skipThisWord = true;
+
+                        if (kanjiNode.get("common").asBoolean())
+                            kanjis.add(new KanjiInfo(kanjiNode.get("text").asText(), true));
                     }
 
                     List<KanaInfo> kanas = new ArrayList<>();
-                    for (JsonNode kanaNode : wordNode.get("kana")) {
-                        kanas.add(new KanaInfo(kanaNode.get("text").asText(), kanaNode.get("common").asBoolean()));
+                    JsonNode kanaArray = wordNode.get("kana");
+                    if (kanaArray.size() == 1) {
+                        // Add the single kana regardless of common status
+                        JsonNode singleKanaNode = kanaArray.get(0);
+                        kanas.add(new KanaInfo(singleKanaNode.get("text").asText(), singleKanaNode.get("common").asBoolean()));
+                    } else {
+                        // Otherwise, add only the common kanas
+                        for (JsonNode kanaNode : kanaArray) {
+                            if (kanaNode.get("common").asBoolean()) {
+                                kanas.add(new KanaInfo(kanaNode.get("text").asText(), true));
+                            }
+                        }
                     }
 
                     List<String> translations = new ArrayList<>();
@@ -102,22 +115,40 @@ public class WordRepositoryImpl implements WordRepository {
                                 translations.add(glossNode.get("text").asText());
                             }
                         }
+
+                        // Populate examples from the "sentences" field
+                        List<Example> examples = new ArrayList<>();
+                        if(firstSenseNode.has("examples")) {
+                            for(JsonNode exampleNode : firstSenseNode.get("examples")) {
+                                Example example = new Example();
+                                if (exampleNode.has("sentences")) {
+                                    List<Sentence> sentences = new ArrayList<>();
+                                    for (JsonNode sentenceNode : exampleNode.get("sentences")) {
+                                        Sentence sentence = new Sentence();
+                                        sentence.setLang(sentenceNode.get("land").asText());
+                                        sentence.setText(sentenceNode.get("text").asText());
+                                        sentences.add(sentence);
+                                    }
+                                    example.setText(exampleNode.get("text").asText());
+                                    example.setSentences(sentences);
+                                }
+                                examples.add(example);
+                            }
+                        }
+                        word.setExamples(examples);
                     }
 
                     word.setKanjis(kanjis);
                     word.setKanas(kanas);
                     word.setTranslations(translations);
 
-                    // Add examples handling if needed
-                    word.setExamples(new ArrayList<>()); // Initialize examples if you need to
-
                     Integer level = levelMap.get(word.getId());
-                    if (level != null) {
-                        word.setLevel(level);
-                    }
 
-                    if(!word.hasOnlyUncommons() && word.getLevel() != null)
+                    if (level != null && !word.hasOnlyUncommons() && !skipThisWord) {
+                        word.setLevel(level);
                         words.add(word);
+                    }
+                    skipThisWord = false;
                 }
                 System.out.println("Words loaded: " + words.size());
             }

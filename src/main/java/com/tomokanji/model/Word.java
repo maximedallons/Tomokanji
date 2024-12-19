@@ -14,7 +14,7 @@ public class Word {
     private List<KanjiInfo> kanjis;
     private List<KanaInfo> kanas;
     private List<String> translations;
-    private List<String> examples;
+    private List<Example> examples;
     private Integer level;
 
     public void removeUncommons() {
