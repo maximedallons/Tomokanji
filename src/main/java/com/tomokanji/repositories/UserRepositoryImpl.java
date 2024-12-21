@@ -64,14 +64,20 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean masterWord(int userId, int wordId) {
-        String sql = "INSERT INTO user_word_mastered (user_id, word_id) VALUES (?, ?)";
-        return jdbcTemplate.update(sql, userId, wordId) == 1;
+    public List<Integer> findMasteredHiraganaIdsByUserId(int userId) {
+        String sql = "SELECT kana_id FROM user_hiragana_mastered WHERE user_id = ?";
+        return jdbcTemplate.queryForList(sql, Integer.class, userId);
     }
 
     @Override
-    public boolean unmasterWord(int userId, int wordId) {
-        String sql = "DELETE FROM user_word_mastered WHERE user_id = ? AND word_id = ?";
+    public List<Integer> findMasteredKatakanaIdsByUserId(int userId) {
+        String sql = "SELECT kana_id FROM user_katakana_mastered WHERE user_id = ?";
+        return jdbcTemplate.queryForList(sql, Integer.class, userId);
+    }
+
+    @Override
+    public boolean masterWord(int userId, int wordId) {
+        String sql = "INSERT INTO user_word_mastered (user_id, word_id) VALUES (?, ?)";
         return jdbcTemplate.update(sql, userId, wordId) == 1;
     }
 
@@ -82,8 +88,38 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public boolean masterHiragana(int userId, int kanaId) {
+        String sql = "INSERT INTO user_hiragana_mastered (user_id, kana_id) VALUES (?, ?)";
+        return jdbcTemplate.update(sql, userId, kanaId) == 1;
+    }
+
+    @Override
+    public boolean masterKatakana(int userId, int kanaId) {
+        String sql = "INSERT INTO user_katakana_mastered (user_id, kana_id) VALUES (?, ?)";
+        return jdbcTemplate.update(sql, userId, kanaId) == 1;
+    }
+
+    @Override
+    public boolean unmasterWord(int userId, int wordId) {
+        String sql = "DELETE FROM user_word_mastered WHERE user_id = ? AND word_id = ?";
+        return jdbcTemplate.update(sql, userId, wordId) == 1;
+    }
+
+    @Override
     public boolean unmasterKanji(int userId, int kanjiId) {
         String sql = "DELETE FROM user_kanji_mastered WHERE user_id = ? AND kanji_id = ?";
         return jdbcTemplate.update(sql, userId, kanjiId) == 1;
+    }
+
+    @Override
+    public boolean unmasterHiragana(int userId, int kanaId) {
+        String sql = "DELETE FROM user_hiragana_mastered WHERE user_id = ? AND kana_id = ?";
+        return jdbcTemplate.update(sql, userId, kanaId) == 1;
+    }
+
+    @Override
+    public boolean unmasterKatakana(int userId, int kanaId) {
+        String sql = "DELETE FROM user_katakana_mastered WHERE user_id = ? AND kana_id = ?";
+        return jdbcTemplate.update(sql, userId, kanaId) == 1;
     }
 }

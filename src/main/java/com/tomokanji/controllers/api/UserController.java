@@ -1,8 +1,6 @@
 package com.tomokanji.controllers.api;
 
-import com.tomokanji.model.Kanji;
 import com.tomokanji.model.User;
-import com.tomokanji.model.Word;
 import com.tomokanji.repositories.LogRepository;
 import com.tomokanji.repositories.UserRepository;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +36,7 @@ public class UserController {
     }
 
     @GetMapping("/{user_id}/words")
-    public List<Integer> getMasteredWords(@PathVariable("user_id") int user_id) {
+    public List<Integer> getMasteredWordIds(@PathVariable("user_id") int user_id) {
         LogRepository.addLog("[GET] /api/users/"+user_id+"/words");
         return userRepository.findMasteredWordIdsByUserId(user_id);
     }
@@ -71,5 +69,41 @@ public class UserController {
     public boolean unmasterKanji(@PathVariable("user_id") int user_id, @PathVariable("kanji_id") int kanji_id) {
         LogRepository.addLog("[DELETE] /api/users/"+user_id+"/kanjis/"+kanji_id);
         return userRepository.unmasterKanji(user_id, kanji_id);
+    }
+
+    @GetMapping("/{user_id}/hiraganas")
+    public List<Integer> getMasteredHiraganaIds(@PathVariable("user_id") int user_id) {
+        LogRepository.addLog("[GET] /api/users/"+user_id+"/hiraganas");
+        return userRepository.findMasteredHiraganaIdsByUserId(user_id);
+    }
+
+    @PostMapping("/{user_id}/hiraganas/{kana_id}")
+    public boolean masterHiragana(@PathVariable("user_id") int user_id, @PathVariable("kana_id") int kana_id) {
+        LogRepository.addLog("[POST] /api/users/"+user_id+"/hiraganas/"+kana_id);
+        return userRepository.masterHiragana(user_id, kana_id);
+    }
+
+    @DeleteMapping("/{user_id}/hiraganas/{kana_id}")
+    public boolean unmasterHiragana(@PathVariable("user_id") int user_id, @PathVariable("kana_id") int kana_id) {
+        LogRepository.addLog("[DELETE] /api/users/"+user_id+"/hiraganas/"+kana_id);
+        return userRepository.unmasterHiragana(user_id, kana_id);
+    }
+
+    @GetMapping("/{user_id}/katakanas")
+    public List<Integer> getMasteredKatakanaIds(@PathVariable("user_id") int user_id) {
+        LogRepository.addLog("[GET] /api/users/"+user_id+"/katakanas");
+        return userRepository.findMasteredKatakanaIdsByUserId(user_id);
+    }
+
+    @PostMapping("/{user_id}/katakanas/{kana_id}")
+    public boolean masterKatakana(@PathVariable("user_id") int user_id, @PathVariable("kana_id") int kana_id) {
+        LogRepository.addLog("[POST] /api/users/"+user_id+"/katakanas/"+kana_id);
+        return userRepository.masterKatakana(user_id, kana_id);
+    }
+
+    @DeleteMapping("/{user_id}/katakanas/{kana_id}")
+    public boolean unmasterKatakana(@PathVariable("user_id") int user_id, @PathVariable("kana_id") int kana_id) {
+        LogRepository.addLog("[DELETE] /api/users/"+user_id+"/katakanas/"+kana_id);
+        return userRepository.unmasterKatakana(user_id, kana_id);
     }
 }
